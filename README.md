@@ -4,9 +4,9 @@
 ### initializer/mitake.rb
 
 ```ruby
-Mitake::API.username = Setting.username
-Mitake::API.password = Setting.password
-Mitake::API.logger = true # or false (忘記是什麼)
+Mitake::API.username = ''
+Mitake::API.password = ''
+
 ```
 
 

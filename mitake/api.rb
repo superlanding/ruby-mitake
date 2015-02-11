@@ -1,15 +1,12 @@
+require 'uri'
+require 'net/http'
+require 'cgi'
+
 module Mitake
   class API
     class << self
-      attr_accessor :username, :password, :debug, :logger
+      attr_accessor :username, :password
     end
-
-    # if Setting.mitake.present?
-    #   self.username = (Setting.mitake.username || '')
-    #   self.password = (Setting.mitake.password || '')
-    #   self.debug = (Setting.mitake.debug || false)
-    #   self.logger = (Setting.mitake.logger || false)
-    # end
 
     DOMAIN = 'http://smexpress.mitake.com.tw:9600'
     GET_PATH = '/SmSendGet.asp'
@@ -42,9 +39,7 @@ module Mitake
       #   Mitake::API.send('09xxxxxxxx')
       #   Mitake::API.send(['09xxxxxxxx', '09xxxxxxxx', '09xxxxxxxx'])
       def send_single_or_bulk!(numbers, message)
-        if debug
-          log("Sending => [#{numbers}] => #{message}")
-        end
+        log("Sending => [#{numbers}] => #{message}")
 
         case numbers
         when Array
@@ -64,9 +59,7 @@ module Mitake
       end
 
       def log(message)
-        if logger
-          Rails.logger.info("Mitake::API => #{message}")
-        end
+        puts "Mitake::API => #{message}"
       end
 
       # API 帳號密碼 parameters
@@ -105,8 +98,15 @@ module Mitake
       # 單筆發送 URI generator
       def single_api_uri(number, message)
         params = auth_params.merge(dstaddr: number, smbody: hack_message_encode(message))
-        query_string = CGI.unescape(params.to_query)
+        query_string = CGI.unescape(to_query(params))
+        puts query_string.inspect
         return URI("#{DOMAIN}#{GET_PATH}?#{query_string}")
+      end
+
+      def to_query(hash)
+        hash.to_a.map { |pair|
+          "#{pair.first}=#{CGI.escape(pair.last)}"
+        }.join('&')
       end
 
       # 三竹設計有問題的 hack 法
