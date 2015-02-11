@@ -1,6 +1,8 @@
 module Mitake
   class API
-    cattr_accessor :username, :password, :debug, :logger
+    class << self
+      attr_accessor :username, :password, :debug, :logger
+    end
 
     # if Setting.mitake.present?
     #   self.username = (Setting.mitake.username || '')
