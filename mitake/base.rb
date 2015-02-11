@@ -13,7 +13,6 @@ module Mitake
               send_sms(numbers, replaced_message)
               return true
             rescue Exception => e
-              puts e.inspect
               return false
             end
           end
